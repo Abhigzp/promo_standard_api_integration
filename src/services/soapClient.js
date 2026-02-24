@@ -4,10 +4,19 @@ const logger = require("../utils/logger");
 
 let client;
 
-async function getSoapClient(wsdlUrl) {
-  if (client) return client;
+const clients = {};
 
-  client = await soap.createClientAsync(wsdlUrl, {
+async function getSoapClient(wsdlUrl) {
+
+  if (!wsdlUrl) {
+    throw new Error("WSDL URL is required");
+  }
+
+  if (clients[wsdlUrl]) {
+    return clients[wsdlUrl];
+  }
+
+  const client = await soap.createClientAsync(wsdlUrl, {
     timeout: config.soap.timeout
   });
 
@@ -18,8 +27,7 @@ async function getSoapClient(wsdlUrl) {
     )
   );
 
-  client.on("request", xml => logger.info({ request: xml }));
-  client.on("response", xml => logger.info({ response: xml }));
+  clients[wsdlUrl] = client;
 
   return client;
 }
