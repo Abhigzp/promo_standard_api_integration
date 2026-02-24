@@ -1,12 +1,15 @@
 const soap = require("soap");
+const config = require("./index");
 
 async function getClient(wsdlUrl) {
-  const client = await soap.createClientAsync(wsdlUrl);
+  const client = await soap.createClientAsync(wsdlUrl, {
+    timeout: 10000, // 10 sec timeout
+  });
 
   client.setSecurity(
     new soap.BasicAuthSecurity(
-      process.env.SOAP_USERNAME,
-      process.env.SOAP_PASSWORD
+      config.soap.username,
+      config.soap.password
     )
   );
 
