@@ -2,11 +2,12 @@ const getClient = require("../config/soapClient");
 const ApiLog = require("../models/apiLog.model");
 
 async function getProduct() {
-  const client = await getClient();
+  const client = await getClient(process.env.INVENTORY_WSDL);
+  console.log("SOAP Client Initialized" , client.describe());
 
   const args = {
     wsVersion: "1.0.0",
-    id: process.env.SUPPLIER_ID
+    supplierID: process.env.SUPPLIER_ID
   };
 
   try {
@@ -34,4 +35,18 @@ async function getProduct() {
   }
 }
 
-module.exports = { getProduct };
+
+async function getInventory() {
+  const client = await getClient(process.env.INVENTORY_WSDL);
+
+  const args = {
+    wsVersion: "1.0.0",
+    supplierID: process.env.SUPPLIER_ID
+  };
+
+  const [result] = await client.GetInventoryAsync(args);
+
+  return result;
+}
+
+module.exports = { getProduct , getInventory};

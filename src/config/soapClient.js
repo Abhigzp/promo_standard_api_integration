@@ -1,11 +1,7 @@
 const soap = require("soap");
 
-let client;
-
-async function getClient() {
-  if (client) return client;
-
-  client = await soap.createClientAsync(process.env.SOAP_WSDL_URL);
+async function getClient(wsdlUrl) {
+  const client = await soap.createClientAsync(wsdlUrl);
 
   client.setSecurity(
     new soap.BasicAuthSecurity(
